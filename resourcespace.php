@@ -15,27 +15,29 @@ define( 'PJ_RESOURCE_SPACE_PLUGIN_URL', untrailingslashit( plugin_dir_url( __FIL
 
 defined( 'PJ_RESOURCE_SPACE_RESULTS_PER_PAGE' ) or define( 'PJ_RESOURCE_SPACE_RESULTS_PER_PAGE', 10 );
 
-if ( ! class_exists( 'MEXP_Service' ) ) {
-	wp_die( esc_html__( 'Media Explorer plugin must be enabled.', 'resourcespace' ) );
-}
-
-require_once( __DIR__ . '/inc/class-resource-space-loader.php' );
-require_once( __DIR__ . '/inc/class-resource-space-admin.php' );
-require_once( __DIR__ . '/inc/class-mexp-resource-space-service.php' );
-require_once( __DIR__ . '/inc/class-mexp-resource-space-template.php' );
-
-Resource_Space_Loader::get_instance();
-Resource_Space_Admin::get_instance();
-
-add_filter( 'mexp_services', function( array $services ) {
-
-	if ( current_user_can( 'insert_from_resourcespace' ) ) {
-		$services['resource-space'] = new MEXP_Resource_Space_Service;
+add_action( 'plugins_loaded', function() {
+	if ( ! class_exists( 'MEXP_Service' ) ) {
+		wp_die( esc_html__( 'Media Explorer plugin must be enabled.', 'resourcespace' ) );
 	}
 
-	return $services;
+	require_once( __DIR__ . '/inc/class-resource-space-loader.php' );
+	require_once( __DIR__ . '/inc/class-resource-space-admin.php' );
+	require_once( __DIR__ . '/inc/class-mexp-resource-space-service.php' );
+	require_once( __DIR__ . '/inc/class-mexp-resource-space-template.php' );
 
-} );
+	Resource_Space_Loader::get_instance();
+	Resource_Space_Admin::get_instance();
+
+	add_filter( 'mexp_services', function( array $services ) {
+
+		if ( current_user_can( 'insert_from_resourcespace' ) ) {
+			$services['resource-space'] = new MEXP_Resource_Space_Service;
+		}
+
+		return $services;
+
+	} );
+});
 
 /**
  * Enqueue Visual Composer modification scripts if plugin is active.
